@@ -1,0 +1,16 @@
+{
+  "name": "squirrel",
+  "private": true,
+  "version": "1.0.0-beta",
+  "description": "Privacy-first home inventory management system with integrated finance tracking and chore management.",
+  "license": "MIT",
+  "scripts": {
+    "frontend": "npm --prefix frontend run dev",
+    "backend": "python backend/run.py",
+    "dev": "bash scripts/run-squirrel.sh",
+    "start": "npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

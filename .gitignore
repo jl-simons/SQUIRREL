@@ -1,0 +1,83 @@
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Build outputs
+dist/
+build/
+frontend/dist/
+frontend/build/
+*.egg-info/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Python specific
+*.py[cod]
+*$py.class
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Testing
+coverage/
+frontend/coverage/
+.nyc_output/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+instance/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# AI instruction and planning documents
+CODE_ANALYSIS_REPORT.md
+RETRO_AESTHETIC_CHANGES.md
+FINANCE_EXTRACTION_PLAN.md
+ECHARTS_MIGRATION_PLAN.md
+ECHARTS_MIGRATION_GUIDE.md
+ECHARTS_IMPLEMENTATION_GUIDE.md
+ECHARTS_SUMMARY.md
+ECHARTS_QUICK_REFERENCE.md
+DESIGN_SYSTEM_GUIDE.md
+DESIGN_SYSTEM_CHEATSHEET.md
+MOTION_SYSTEM_GUIDE.md
+MOTION_CHEATSHEET.md
+UI_ENHANCEMENT_SUMMARY.md
+CSS_REFERENCE.md
+INTERACTIVE_DASHBOARD_GUIDE.md
+INTERACTIVE_DASHBOARD_CODE_SNIPPETS.md
+
+# AI context directory
+.ai/
+
+# macOS
+.AppleDouble
+.LSOverride
+
+# Temporary files
+*.tmp
+*.temp
