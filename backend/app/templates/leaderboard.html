@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h2>Leaderboard</h2>
+  <div class="leaderboard-grid">
+    {% for user in users %}
+      <div class="leaderboard-card">
+        <div class="rank">#{{ loop.index }}</div>
+        <div class="avatar" aria-hidden="true">{{ user.username[:1]|upper }}</div>
+        <div class="user-info">
+          <div class="username">{{ user.username }}</div>
+          <div class="points">{{ user.points }} pts</div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

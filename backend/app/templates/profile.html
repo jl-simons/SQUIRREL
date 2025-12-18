@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Profile</h2>
+<form method="post" action="{{ prefix }}{{ url_for('profile') }}">
+  <div>
+    <label>Username (read-only):</label>
+    <input type="text" value="{{ current_user.username }}" readonly>
+  </div>
+  <div>
+    <label>Display Name:</label>
+    <input type="text" name="display_name" value="{{ current_user.display_name or current_user.username }}">
+  </div>
+  <div>
+    <label>Profile Picture URL:</label>
+    <input type="url" name="profile_picture" value="{{ current_user.profile_picture or '' }}">
+  </div>
+  <button type="submit">Save</button>
+</form>
+
+{% if current_user.profile_picture %}
+  <h3>Preview</h3>
+  <img src="{{ current_user.profile_picture }}" alt="Profile Picture" style="max-width:200px;border-radius:8px;" />
+{% endif %}
+
+<h3>Recent Activity</h3>
+<div class="activity-grid">
+  <section>
+    <h4>Recently Completed Chores</h4>
+    {% if recent_completed %}
+      <ul>
+      {% for cc in recent_completed %}
+        <li>{{ cc.date }} — {{ cc.chore_name }} (+{{ cc.points }} pts)</li>
+      {% endfor %}
+      </ul>
+    {% else %}
+      <p>No recent chores.</p>
+    {% endif %}
+  </section>
+  <section>
+    <h4>Recent Rewards</h4>
+    {% if recent_purchases %}
+      <ul>
+      {% for p in recent_purchases %}
+        <li>{{ p.date }} — {{ p.reward.name }} ({{ p.reward.cost }} pts)</li>
+      {% endfor %}
+      </ul>
+    {% else %}
+      <p>No recent rewards.</p>
+    {% endif %}
+  </section>
+</div>
+
+<script>
+  (function(){
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var isEmbed = params.has('embed');
+      // If redirected with saved=1, notify host to refresh user info
+      if (isEmbed && window.parent && window.parent !== window) {
+        var saved = params.get('saved');
+        if (saved === '1') {
+          window.parent.postMessage({
+            source: 'squirrel-backend',
+            type: 'profile-saved'
+          }, '*');
+        }
+      }
+    } catch(e) {}
+  })();
+</script>
+{% endblock %}

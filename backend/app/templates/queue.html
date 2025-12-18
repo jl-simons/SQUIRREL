@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Your Reward Queue</h2>
+<ul>
+  {% for item in items %}
+    <li>
+      {{ item.reward.name }} ({{ item.reward.cost }} pts) - added {{ item.date_added }}
+      <a href="{{ prefix }}{{ url_for('redeem_queue', item_id=item.id) }}">Redeem</a>
+      <a href="{{ prefix }}{{ url_for('remove_queue', item_id=item.id) }}">Remove</a>
+    </li>
+  {% else %}
+    <li>No items in your queue.</li>
+  {% endfor %}
+</ul>
+<a href="{{ prefix }}{{ url_for('rewards') }}">Browse Rewards</a>
+{% endblock %}

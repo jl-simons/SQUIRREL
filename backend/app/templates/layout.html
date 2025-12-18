@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Chore Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% set forwarded_prefix = request.headers.get('X-Forwarded-Prefix') %}
+    {% set prefix = forwarded_prefix if forwarded_prefix else ('/backend' if request.path[:8] == '/backend' else '') %}
+    {% set embed = request.args.get('embed') %}
+    <link rel="stylesheet" href="{{ prefix }}{{ url_for('static', filename='style.css') }}">
+    <style>
+      /* Minimal tweaks for embedded mode (hide backend nav when inside React app) */
+      {% if embed %}
+      .nav-bar { display: none; }
+      body { background: transparent; }
+      {% endif %}
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      {% set forwarded_prefix = request.headers.get('X-Forwarded-Prefix') %}
+      {% set prefix = forwarded_prefix if forwarded_prefix else ('/backend' if request.path[:8] == '/backend' else '') %}
+      <div id="squirrel-auth-state" data-authenticated="{% if current_user.is_authenticated %}true{% else %}false{% endif %}" style="display:none"></div>
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <ul class="flashes">
+            {% for msg in messages %}
+              <li>{{ msg }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+      {% if not embed %}
+      <nav class="nav-bar">
+        <a href="{{ prefix }}{{ url_for('dashboard') }}">Hub</a>
+        <a href="{{ prefix }}{{ url_for('chores') }}">Chores</a>
+        <a href="{{ prefix }}{{ url_for('leaderboard') }}">Leaderboard</a>
+        <a href="{{ prefix }}{{ url_for('rewards') }}">Rewards</a>
+        <a href="{{ prefix }}{{ url_for('view_queue') }}">Queue</a>
+        <a href="{{ prefix }}{{ url_for('finances') }}">Finances</a>
+        {% if current_user.is_authenticated %}
+          <a href="{{ prefix }}{{ url_for('logout') }}">Logout</a>
+        {% else %}
+          <a href="{{ prefix }}{{ url_for('login') }}">Login</a>
+          <a href="{{ prefix }}{{ url_for('register') }}">Register</a>
+        {% endif %}
+      </nav>
+      {% endif %}
+      <div class="content">
+        {% block content %}{% endblock %}
+      </div>
+    </div>
+    <script>
+      (function() {
+        try {
+          var needPrefix = window.location.pathname.startsWith('/backend');
+          if (!needPrefix) return;
+          var params = new URLSearchParams(window.location.search);
+          var isEmbed = params.has('embed');
+          function withEmbed(href) {
+            if (!isEmbed) return href;
+            if (href.indexOf('?') === -1) return href + '?embed=1';
+            if (!/[?&]embed=/.test(href)) return href + '&embed=1';
+            return href;
+          }
+          // Fix absolute anchors to stay under /backend and preserve embed
+          document.querySelectorAll('a[href^="/"]').forEach(function(a){
+            var href = a.getAttribute('href');
+            if (href && !href.startsWith('/backend')) {
+              a.setAttribute('href', withEmbed('/backend' + href));
+            } else if (href) {
+              a.setAttribute('href', withEmbed(href));
+            }
+          });
+          // Fix stylesheet links to load via /backend/static
+          document.querySelectorAll('link[rel="stylesheet"][href^="/static/"]').forEach(function(l){
+            var h = l.getAttribute('href');
+            if (h && !h.startsWith('/backend')) {
+              l.setAttribute('href','/backend'+h);
+            }
+          });
+          // Ensure form actions preserve embed
+          document.querySelectorAll('form[action]').forEach(function(f){
+            var act = f.getAttribute('action');
+            if (!act) return;
+            f.setAttribute('action', withEmbed(act));
+          });
+
+          // Notify host app about auth state when embedded (so React can react on login/register)
+          if (isEmbed && window.parent && window.parent !== window) {
+            var authEl = document.getElementById('squirrel-auth-state');
+            var auth = authEl ? authEl.getAttribute('data-authenticated') === 'true' : false;
+            window.parent.postMessage({
+              source: 'squirrel-backend',
+              type: 'auth',
+              authenticated: auth,
+              path: window.location.pathname
+            }, '*');
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </body>
+</html>

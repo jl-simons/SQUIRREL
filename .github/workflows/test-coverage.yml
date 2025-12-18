@@ -1,0 +1,71 @@
+name: Test and Coverage
+
+on:
+  push:
+    branches: [ main, 'feature/**', 'bugfix/**', 'hotfix/**', 'release/**' ]
+  pull_request:
+    branches: [ main, 'develop' ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run linting
+      run: npm run lint
+
+    - name: Run tests with coverage
+      run: npm run test:coverage
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        directory: ./coverage
+        fail_ci_if_error: true
+        verbose: true
+
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v3
+      with:
+        name: code-coverage-report
+        path: coverage/
+
+    - name: Check coverage thresholds
+      run: |
+        COVERAGE_SUMMARY=$(cat coverage/coverage-summary.json)
+        STATEMENTS=$(echo $COVERAGE_SUMMARY | jq '.total.statements.pct')
+        BRANCHES=$(echo $COVERAGE_SUMMARY | jq '.total.branches.pct')
+        FUNCTIONS=$(echo $COVERAGE_SUMMARY | jq '.total.functions.pct')
+        LINES=$(echo $COVERAGE_SUMMARY | jq '.total.lines.pct')
+
+        THRESHOLD=90
+
+        if (( $(echo "$STATEMENTS < $THRESHOLD" | bc -l) )) || \
+           (( $(echo "$BRANCHES < $THRESHOLD" | bc -l) )) || \
+           (( $(echo "$FUNCTIONS < $THRESHOLD" | bc -l) )) || \
+           (( $(echo "$LINES < $THRESHOLD" | bc -l) )); then
+          echo "Coverage is below threshold of $THRESHOLD%"
+          echo "Statements: $STATEMENTS%"
+          echo "Branches: $BRANCHES%"
+          echo "Functions: $FUNCTIONS%"
+          echo "Lines: $LINES%"
+          exit 1
+        else
+          echo "Coverage is above threshold of $THRESHOLD%"
+          echo "Statements: $STATEMENTS%"
+          echo "Branches: $BRANCHES%"
+          echo "Functions: $FUNCTIONS%"
+          echo "Lines: $LINES%"
+        fi

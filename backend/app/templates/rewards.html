@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Rewards Shop</h2>
+<form method="post">
+  {% for reward in rewards %}
+    <div>
+      <input type="radio" id="reward{{ reward.id }}" name="reward_id" value="{{ reward.id }}">
+      <label for="reward{{ reward.id }}">{{ reward.name }} ({{ reward.cost }} pts)</label>
+    </div>
+  {% else %}
+    <p>No rewards available yet.</p>
+  {% endfor %}
+  <button type="submit">Add to Queue</button>
+</form>
+<a href="{{ prefix }}{{ url_for('view_queue') }}">View Your Queue</a>
+{% endblock %}

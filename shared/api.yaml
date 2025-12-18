@@ -1,0 +1,88 @@
+openapi: 3.0.0
+info:
+  title: SQUIRREL Suite API
+  description: API for SQUIRREL Suite (Inventory, Chores, Finance)
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+    description: Development server
+paths:
+  /api/chores:
+    get:
+      summary: Get all chores
+      responses:
+        '200':
+          description: A list of chores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Chore'
+  /api/finance:
+    get:
+      summary: Get finance information
+      responses:
+        '200':
+          description: Finance information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Finance'
+  /api/inventory:
+    get:
+      summary: Get inventory items
+      responses:
+        '200':
+          description: A list of inventory items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InventoryItem'
+components:
+  schemas:
+    Chore:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        points:
+          type: integer
+    Finance:
+      type: object
+      properties:
+        balance:
+          type: number
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: integer
+        amount:
+          type: number
+        description:
+          type: string
+        date:
+          type: string
+          format: date-time
+    InventoryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        quantity:
+          type: integer
+        location:
+          type: string
